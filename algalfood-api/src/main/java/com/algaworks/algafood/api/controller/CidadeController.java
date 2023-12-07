@@ -30,7 +30,7 @@ import com.algaworks.algafood.domain.service.CadastroCidadeService;
 
 import io.swagger.annotations.ApiParam;
 
-// aula 18.7 @Api. vinculadando tag cidade com a documentacao  
+// aula 18.7 @Api. vinculadando tag cidade com a documentacao   
 
 @RestController
 @RequestMapping("cidades")
