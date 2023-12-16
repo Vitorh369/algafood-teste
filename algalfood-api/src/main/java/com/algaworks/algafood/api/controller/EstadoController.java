@@ -5,7 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,13 +22,14 @@ import com.algaworks.algafood.api.assembler.EstadoModelAssembler;
 import com.algaworks.algafood.api.disassemblers.EstadoInputDisassembler;
 import com.algaworks.algafood.api.model.EstadoModel;
 import com.algaworks.algafood.api.model.input.EstadoInput;
+import com.algaworks.algafood.api.openapi.controller.EstadoControllerOpenApi;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.repository.EstadoRepository;
 import com.algaworks.algafood.domain.service.CadastroEstadoService;
 
 @RestController
-@RequestMapping("/estados")
-public class EstadoController {
+@RequestMapping(path =  "/estados")
+public class EstadoController implements  EstadoControllerOpenApi {
 	
 	@Autowired
 	private EstadoModelAssembler estadoModelAssembler;
@@ -40,22 +43,22 @@ public class EstadoController {
 	@Autowired
 	private CadastroEstadoService cadastroEstado;
 
-	@GetMapping
-	public List<EstadoModel> listar() {
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public CollectionModel<EstadoModel> listar() {
 	    List<Estado> todosEstados = estadoRepository.findAll();
 	    
 	    return estadoModelAssembler.toCollectionModel(todosEstados);
 	}
 
-	@GetMapping("/{estadoId}")
+	@GetMapping(value="/{estadoId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public EstadoModel buscar(@PathVariable Long estadoId) {
 	    Estado estado = cadastroEstado.buscarOuFalhar(estadoId);
 	    
 	    return estadoModelAssembler.toModel(estado);
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
+	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED )
 	public EstadoModel adicionar(@RequestBody @Valid EstadoInput estadoInput) {
 	    Estado estado = estadoInputDisassembler.toDomainObject(estadoInput);
 	    
@@ -64,7 +67,7 @@ public class EstadoController {
 	    return estadoModelAssembler.toModel(estado);
 	}
 
-	@PutMapping("/{estadoId}")
+	@PutMapping(value ="/{estadoId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public EstadoModel atualizar(@PathVariable Long estadoId,
 	        @RequestBody @Valid EstadoInput estadoInput) {
 	    Estado estadoAtual = cadastroEstado.buscarOuFalhar(estadoId);
@@ -76,7 +79,7 @@ public class EstadoController {
 	    return estadoModelAssembler.toModel(estadoAtual);
 	} 
 
-	@DeleteMapping("/{estadoId}")
+	@DeleteMapping(value ="/{estadoId}", produces = {})
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable Long estadoId) {
 		 cadastroEstado.excluir(estadoId);

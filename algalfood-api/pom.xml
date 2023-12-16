@@ -36,12 +36,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
@@ -69,12 +74,9 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.fasterxml.jackson.dataformat</groupId>-->
-<!--            <artifactId>jackson-dataformat-xml</artifactId>-->
-<!--        </dependency>-->
+
         
-           <dependency>
+          <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
@@ -155,11 +157,23 @@
             <groupId>io.springfox</groupId><!--biblioteca para documentacao do projeto -->
             <artifactId>springfox-swagger-ui</artifactId>
             <version>3.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.plugin</groupId>
+                    <artifactId>spring-plugin-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId><!--biblioteca para documentacao do projeto -->
             <artifactId>springfox-bean-validators</artifactId><!-- biblioteca do springfox para integracao com bean validation-->
             <version>3.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.plugin</groupId>
+                    <artifactId>spring-plugin-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId><!--dependendecina para documentacao aula 18.14 -->

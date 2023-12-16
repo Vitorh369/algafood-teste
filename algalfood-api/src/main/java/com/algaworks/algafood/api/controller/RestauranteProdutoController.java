@@ -5,7 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.AlgaLinks;
 import com.algaworks.algafood.api.assembler.ProdutoModelAssembler;
 import com.algaworks.algafood.api.disassemblers.ProdutoInputDisassembler;
 import com.algaworks.algafood.api.model.ProdutoModel;
 import com.algaworks.algafood.api.model.input.ProdutoInput;
+import com.algaworks.algafood.api.openapi.controller.RestauranteProdutoControllerOpenApi;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.ProdutoRepository;
@@ -28,7 +32,7 @@ import com.algaworks.algafood.domain.service.CadastroRestauranteService;
 
 @RestController
 @RequestMapping("/restaurante/{restauranteId}/produtos")
-public class RestauranteProdutoController {
+public class RestauranteProdutoController implements RestauranteProdutoControllerOpenApi {
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
@@ -45,32 +49,35 @@ public class RestauranteProdutoController {
 	@Autowired
 	private ProdutoInputDisassembler produtoInputDisassembler;
 	
+	@Autowired
+	private AlgaLinks algaLinks;
+	
+	@Override
 	//aula13.4
-	@GetMapping
-	public List<ProdutoModel> listar(@PathVariable Long restauranteId,
-			@RequestParam(required = false) boolean incluirInativos ){
-		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
-		
-		List<Produto> todosProdutos = null;
-		
-		if(incluirInativos) {
-			todosProdutos = produtoRepository.findTodosByRestaurante(restaurante);
-
-		} else {
-			todosProdutos = produtoRepository.findAtivosByRestaurante(restaurante);
-		}
-		return produtoModelAssembler.toCollectionModel(todosProdutos);
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public CollectionModel<ProdutoModel> listar(@PathVariable Long restauranteId,
+            @RequestParam(required = false, defaultValue = "false") Boolean incluirInativos) {
+			Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
+			
+			List<Produto> todosProdutos = null;
+			
+			if (incluirInativos) {
+				todosProdutos = produtoRepository.findTodosByRestaurante(restaurante);
+			} else {
+				todosProdutos = produtoRepository.findAtivosByRestaurante(restaurante);
+			}
+			
+			return produtoModelAssembler.toCollectionModel(todosProdutos).add(algaLinks.linkToProdutos(restauranteId));
 	}
 	
-	
-    @GetMapping("/{produtoId}")
+    @GetMapping(value = "/{produtoId}", produces= MediaType.APPLICATION_JSON_VALUE)
     public ProdutoModel buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         Produto produto = cadastroProdutoService.buscarOuFalhar(restauranteId, produtoId);
         
         return produtoModelAssembler.toModel(produto);
     }
     
-    @PostMapping
+    @PostMapping(produces= MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoModel adicionar(@PathVariable Long restauranteId,
             @RequestBody @Valid ProdutoInput produtoInput) {
@@ -84,7 +91,7 @@ public class RestauranteProdutoController {
         return produtoModelAssembler.toModel(produto);
     }
 	
-	@PutMapping("/{produtoId}")
+	@PutMapping(value="/{produtoId}", produces = {})
 	public ProdutoModel atualizar(@PathVariable Long restauranteId, @PathVariable Long produtoId,
 			@RequestBody @Valid ProdutoInput produtoInput) {
 		
@@ -96,6 +103,7 @@ public class RestauranteProdutoController {
 		
 		return produtoModelAssembler.toModel(produtoAtual);
 	}
+
 }
 
 

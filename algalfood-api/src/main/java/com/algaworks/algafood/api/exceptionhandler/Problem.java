@@ -14,7 +14,7 @@ import lombok.Getter;
 @JsonInclude(Include.NON_NULL)// CASO ALGUNS DOS ATRIBUTOS FOREM NULOS, O ATRIBUTO NAO APRECERAR PARA O CLIENTE
 @Getter
 @Builder // um padrao de projeto que cria um construtor 
-@ApiModel("ObjetoProblema")
+@ApiModel("Problema")
 public class Problem {
 
 	//aula 18.14 @ApiModelProperty

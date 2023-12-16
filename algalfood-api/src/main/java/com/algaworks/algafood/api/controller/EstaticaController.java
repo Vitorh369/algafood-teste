@@ -3,6 +3,7 @@ package com.algaworks.algafood.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algaworks.algafood.api.AlgaLinks;
 import com.algaworks.algafood.api.model.dto.VendaDiaria;
+import com.algaworks.algafood.api.openapi.controller.EstatisticasControllerOpenApi;
 import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
 import com.algaworks.algafood.domain.service.VendaQueryService;
 import com.algaworks.algafood.domain.service.VendaReportService;
@@ -21,13 +24,26 @@ import com.algaworks.algafood.domain.service.VendaReportService;
 
 @RestController
 @RequestMapping(path = "/estatisticas")
-public class EstaticaController {
+public class EstaticaController implements EstatisticasControllerOpenApi{
 
 	@Autowired
 	private  VendaQueryService vendaQueryService;
 	
 	@Autowired
 	private VendaReportService vendaReportService;
+	
+	@Autowired
+	private AlgaLinks algaLinks;
+
+
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public EstatisticasModel estatisticas() {
+	    var estatisticasModel = new EstatisticasModel();
+	    
+	    estatisticasModel.add(algaLinks.linkToEstatisticasVendasDiarias("vendas-diarias"));
+	    
+	    return estatisticasModel;
+		}       
 	
 	//produces = MediaType.APPLICATION_JSON_VALUE: só vai se chamado quando o consumidor chama por json
 	@GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,6 +69,11 @@ public class EstaticaController {
 				.headers(headers)
 				.body(bytesPdf);
 	}
+	
+	public static class EstatisticasModel extends RepresentationModel<EstatisticasModel> {
+	}
+
+
 }
 
 

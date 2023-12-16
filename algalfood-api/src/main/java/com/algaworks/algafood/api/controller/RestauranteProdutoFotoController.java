@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.algaworks.algafood.api.assembler.FotoProdutoModelAssembler;
 import com.algaworks.algafood.api.model.FotoProdutoModel;
 import com.algaworks.algafood.api.model.input.FotoProdutoInput;
+import com.algaworks.algafood.api.openapi.controller.RestauranteProdutoFotoControllerOpenApi;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncotradaException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
@@ -37,7 +39,7 @@ import com.algaworks.algafood.domain.service.FotoStorageService.FotoRecuperada;
 
 @RestController
 @RequestMapping("/restaurante/{restauranteId}/produtos/{produtoId}/foto")
-public class RestauranteProdutoFotoController {
+public class RestauranteProdutoFotoController implements RestauranteProdutoFotoControllerOpenApi{
 
 	@Autowired
 	private CadastroProdutoService cadastroProdutoService;
@@ -51,14 +53,15 @@ public class RestauranteProdutoFotoController {
 	@Autowired
 	private FotoStorageService fotoStorageService;
 
+	@Override
 	//adionar a foto
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FotoProdutoModel AtulizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId,
-			@Valid FotoProdutoInput fotoProdutoInput) throws IOException {
+	public FotoProdutoModel atualizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId,
+			@Valid FotoProdutoInput fotoProdutoInput, @RequestPart(required = true) MultipartFile arquivo) throws IOException {
 
 		Produto produto = cadastroProdutoService.buscarOuFalhar(restauranteId, produtoId);
 
-		MultipartFile arquivo = fotoProdutoInput.getArquivo();
+		//MultipartFile arquivo = fotoProdutoInput.getArquivo();
 
 		FotoProduto foto = new FotoProduto();
 		foto.setProduto(produto);
@@ -84,7 +87,7 @@ public class RestauranteProdutoFotoController {
 	//aula 14.13, 14.14
 	//buscar a imagem para mostrar
 	@GetMapping
-	public ResponseEntity<?> servirFoto(@PathVariable Long restauranteId,
+	public ResponseEntity<?> servir(@PathVariable Long restauranteId,
 			@PathVariable Long produtoId, @RequestHeader(name = "accept") String accepHeader) throws HttpMediaTypeNotAcceptableException {
 		
 		try {
@@ -120,7 +123,7 @@ public class RestauranteProdutoFotoController {
 	
 	@DeleteMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void exluir(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
+	public void excluir(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		catalogoFotoProdutoService.excluir(restauranteId, produtoId);
 	}
 
@@ -137,6 +140,8 @@ public class RestauranteProdutoFotoController {
 		}
 		
 	}
+
+
 
 }
 

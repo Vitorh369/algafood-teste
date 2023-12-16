@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,7 +51,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
     
     // colocanco cache no metodo listar aula 17.2
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FormaPagamentoModel>> listar(ServletWebRequest request) {
+    public ResponseEntity<CollectionModel<FormaPagamentoModel>> listar(ServletWebRequest request) {
     	
     	
     	//eTag aula  17.8 e 17.9
@@ -72,7 +73,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
     	
         List<FormaPagamento> todasFormasPagamentos = formaPagamentoRepository.findAll();
         
-        List<FormaPagamentoModel> formasPagamentoModel = formaPagamentoModelAssembler.toCollectionModel(todasFormasPagamentos);
+        CollectionModel<FormaPagamentoModel> formasPagamentoModel = formaPagamentoModelAssembler.toCollectionModel(todasFormasPagamentos);
          
         return ResponseEntity.ok()
         		 .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS).cachePublic())

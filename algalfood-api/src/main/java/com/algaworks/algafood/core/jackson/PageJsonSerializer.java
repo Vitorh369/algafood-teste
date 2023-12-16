@@ -13,10 +13,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 //Implementando JsonSerializer para customizar representação de paginação
 @JsonComponent
 public class PageJsonSerializer extends JsonSerializer<Page<?>>{
-
+	
 	@Override
 	public void serialize(Page<?> page, JsonGenerator gen, 
 			SerializerProvider serializers) throws IOException {
+		
 		
 		gen.writeStartObject();
 		
@@ -27,7 +28,8 @@ public class PageJsonSerializer extends JsonSerializer<Page<?>>{
 		gen.writeNumberField("number", page.getNumber());
 		
 		gen.writeEndObject();
-		
 	}
 
 }
+	
+	
